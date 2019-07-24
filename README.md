@@ -58,6 +58,12 @@ VHDL Gameboy Color implementation
 - Skillset
   - You should be able to implement VGA/SDram Core in VHDl/Verilog
   - Being able to simulate VHDL with e.g. Modelsim will help a lot
+  
+- Gameboy Color Bootrom
+   - Core doesn't implemented the original Gameboy black and White palettes
+   - Bootrom MUST set the color palettes, otherwise screen will stay blank
+   - Original bootrom does that, but using may not be legal
+   - There are free bootroms available, but not tested yet
 
 ### What to do:
 - Connect all the ports of the toplevel (gameboy.vhd) with your design. All Ports are described in the top level port list.
