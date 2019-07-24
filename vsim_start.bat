@@ -1,0 +1,1 @@
+vsim gameboy.gameboy -t 1ps -suppress 8684
