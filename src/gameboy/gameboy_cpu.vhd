@@ -25,6 +25,7 @@ entity gameboy_cpu is
       
       new_cycles_out   : out   unsigned(7 downto 0) := (others => '0');
       new_cycles_valid : out   std_logic := '0';
+      doublespeed_out  : out   std_logic;
       
       IRP_VBlank       : in    std_logic;
       IRP_LCDStat      : in    std_logic;
@@ -275,6 +276,7 @@ begin
    HDMA5_readback <= not HDMA_required & std_logic_vector(HDMA_Work_Left);
    
    Gameboy_SpeedSwitch_readback <= doublespeed & "000000" & speedswitch_req;
+   doublespeed_out              <= doublespeed;
    
    process (clk100)
       variable result17_signed : signed(16 downto 0);

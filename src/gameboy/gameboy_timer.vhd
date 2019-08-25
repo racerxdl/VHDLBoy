@@ -13,6 +13,7 @@ entity gameboy_timer is
       gb_bus           : inout proc_bus_gb_type := ((others => 'Z'), (others => 'Z'), (others => 'Z'), 'Z', 'Z', 'Z');
       new_cycles       : in    unsigned(7 downto 0);
       new_cycles_valid : in    std_logic;
+      doublespeed      : in    std_logic;
       IRP_Timer        : out   std_logic := '0';
       
       DivReg_debug     : out   std_logic_vector(7 downto 0);
@@ -70,7 +71,12 @@ begin
          elsif (new_cycles_valid = '1') then
                
             cyclecount_div   <= cyclecount_div   + new_cycles;
-            cyclecount_timer <= cyclecount_timer + new_cycles;
+            
+            if (doublespeed = '1') then
+               cyclecount_timer <= cyclecount_timer + (new_cycles & '0'); -- * 2 when using high clock rate for cgb
+            else
+               cyclecount_timer <= cyclecount_timer + new_cycles;
+            end if;
                
          else 
          
@@ -79,14 +85,17 @@ begin
                cyclecount_div <= (14 downto 7 => '0') & cyclecount_div(6 downto 0);
             end if;
             
+            -- when timer wraps around, it is loaded with Gameboy_TimeMod only. normally it should cnt some more afterwards if there are more
+            -- as this is difficult and doesn't seem to influence any game we skip it.
+            
             case Gameboy_TimeControl(1 downto 0) is
                when "00" => -- 4194 hz
                   if (cyclecount_timer(14 downto 10) > 0) then
                      cyclecount_timer <= (14 downto 10 => '0') & cyclecount_timer(9 downto 0);
                      if (timercontrol_on = '1') then
-                        TimeCnt <= TimeCnt - cyclecount_timer(14 downto 10); -- only working for maximum of 31 wraparounds -> should be enough in real life
-                        if (cyclecount_timer(14 downto 10) >= TimeCnt and TimeCnt > 0) then
-                           -- TimeCnt = TimeMod; ????
+                        TimeCnt <= TimeCnt + cyclecount_timer(14 downto 10); -- only working for maximum of 31 wraparounds -> should be enough in real life
+                        if (to_integer(cyclecount_timer(14 downto 10)) + to_integer(TimeCnt) > 255) then
+                           TimeCnt   <= unsigned(Gameboy_TimeMod);
                            IRP_Timer <= '1';
                         end if;
                      end if;
@@ -96,9 +105,9 @@ begin
                   if (cyclecount_timer(8 downto 4) > 0) then
                      cyclecount_timer <= (14 downto 4 => '0') & cyclecount_timer(3 downto 0);
                      if (timercontrol_on = '1') then
-                        TimeCnt <= TimeCnt - cyclecount_timer(8 downto 4); -- only working for maximum of 31 wraparounds -> should be enough in real life
-                        if (cyclecount_timer(8 downto 4) >= TimeCnt and TimeCnt > 0) then
-                           -- TimeCnt = TimeMod; ????
+                        TimeCnt <= TimeCnt + cyclecount_timer(8 downto 4); -- only working for maximum of 31 wraparounds -> should be enough in real life
+                        if (to_integer(cyclecount_timer(8 downto 4)) + to_integer(TimeCnt) > 255) then
+                           TimeCnt   <= unsigned(Gameboy_TimeMod);
                            IRP_Timer <= '1';
                         end if;
                      end if;
@@ -108,9 +117,9 @@ begin
                   if (cyclecount_timer(10 downto 6) > 0) then
                      cyclecount_timer <= (14 downto 6 => '0') & cyclecount_timer(5 downto 0);
                      if (timercontrol_on = '1') then
-                        TimeCnt <= TimeCnt - cyclecount_timer(10 downto 6); -- only working for maximum of 31 wraparounds -> should be enough in real life
-                        if (cyclecount_timer(10 downto 6) >= TimeCnt and TimeCnt > 0) then
-                           -- TimeCnt = TimeMod; ????
+                        TimeCnt <= TimeCnt + cyclecount_timer(10 downto 6); -- only working for maximum of 31 wraparounds -> should be enough in real life
+                        if (to_integer(cyclecount_timer(10 downto 6)) + to_integer(TimeCnt) > 255) then
+                           TimeCnt   <= unsigned(Gameboy_TimeMod);
                            IRP_Timer <= '1';
                         end if;
                      end if;
@@ -120,9 +129,9 @@ begin
                   if (cyclecount_timer(12 downto 8) > 0) then
                      cyclecount_timer <= (14 downto 8 => '0') & cyclecount_timer(7 downto 0);
                      if (timercontrol_on = '1') then
-                        TimeCnt <= TimeCnt - cyclecount_timer(12 downto 8); -- only working for maximum of 31 wraparounds -> should be enough in real life
-                        if (cyclecount_timer(12 downto 8) >= TimeCnt and TimeCnt > 0) then
-                           -- TimeCnt = TimeMod; ????
+                        TimeCnt <= TimeCnt + cyclecount_timer(12 downto 8); -- only working for maximum of 31 wraparounds -> should be enough in real life
+                        if (to_integer(cyclecount_timer(12 downto 8)) + to_integer(TimeCnt) > 255) then
+                           TimeCnt   <= unsigned(Gameboy_TimeMod);
                            IRP_Timer <= '1';
                         end if;
                      end if;

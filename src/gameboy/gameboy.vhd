@@ -84,6 +84,7 @@ architecture arch of gameboy is
    
    signal new_cycles       : unsigned(7 downto 0);
    signal new_cycles_valid : std_logic;
+   signal doublespeed      : std_logic;
    
    signal IRP_VBlank  : std_logic;
    signal IRP_LCDStat : std_logic;
@@ -220,6 +221,7 @@ begin
       gb_bus           => gb_bus,
       new_cycles       => new_cycles,      
       new_cycles_valid => new_cycles_valid,
+      doublespeed      => doublespeed,
       IRP_Timer        => IRP_Timer,
       DivReg_debug     => DivReg_debug,
       TimeCnt_debug    => TimeCnt_debug,
@@ -244,6 +246,7 @@ begin
       
       new_cycles_out   => new_cycles,
       new_cycles_valid => new_cycles_valid,
+      doublespeed_out  => doublespeed,
       
       IRP_VBlank       => IRP_VBlank,
       IRP_LCDStat      => IRP_LCDStat,
